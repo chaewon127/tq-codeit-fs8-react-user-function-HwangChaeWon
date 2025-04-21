@@ -1,5 +1,3 @@
-"use client";
-
 import { MyPageLayout } from "@/components/Layout";
 
 export default function Layout({ children }) {

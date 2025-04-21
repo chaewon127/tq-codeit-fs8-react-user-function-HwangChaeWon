@@ -12,7 +12,6 @@ function AvatarInput({ className = "", initialAvatar, name, onChange }) {
 
   function handleChange(e) {
     const file = e.target.files[0];
-    console.log("file", file);
     setFile(file);
     onChange(name, file);
   }
@@ -28,7 +27,6 @@ function AvatarInput({ className = "", initialAvatar, name, onChange }) {
     }
 
     const blobUrl = URL.createObjectURL(file);
-    console.log("blobUrl", blobUrl);
     setAvatar(blobUrl);
 
     return () => {
