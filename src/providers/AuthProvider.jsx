@@ -43,8 +43,8 @@ export default function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    /** @TODO 로그아웃 로직 구현 */
-    console.log("로그아웃");
+    await authService.logout();
+    setUser(null);
   };
 
   const updateUser = async (user) => {
