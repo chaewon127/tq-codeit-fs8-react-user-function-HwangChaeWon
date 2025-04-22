@@ -82,8 +82,9 @@ function LoginPage() {
           className={styles.GoogleButton}
           type="button"
           appearance="outline"
-          as="a"
-          href="https://learn.codeit.kr/api/link-service/auth/google"
+          onClick={() => {
+            window.location.href = "http://localhost:3000/api/auth/google";
+          }}
         >
           <img src="/images/google.svg" alt="Google" />
           구글로 시작하기
