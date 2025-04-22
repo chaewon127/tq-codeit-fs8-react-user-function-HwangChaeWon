@@ -82,8 +82,9 @@ function LoginPage() {
           className={styles.GoogleButton}
           type="button"
           appearance="outline"
-          as="a"
-          href="https://learn.codeit.kr/api/link-service/auth/google"
+          onClick={() => {
+            // TODO: 구글 로그인 창으로 이동
+          }}
         >
           <img src="/images/google.svg" alt="Google" />
           구글로 시작하기
