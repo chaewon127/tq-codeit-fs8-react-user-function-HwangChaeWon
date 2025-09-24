@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Label from "../Label";
 import Input from "../Input";
 import Button from "../Button";
@@ -15,6 +16,9 @@ function RegisterPage() {
     password: "",
     passwordRepeat: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const router = useRouter();
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -27,11 +31,57 @@ function RegisterPage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    const { name, email, password, passwordRepeat } = values;
+
+    if (!name || !email || !password || !passwordRepeat) {
+      setError("모든 필드를 입력해주세요.");
+      return;
+    }
+
+    if (password !== passwordRepeat) {
+      setError("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const res = await fetch(
+        "https://learn.codeit.kr/api/link-service/users",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: values.name,
+            email: values.email,
+            password: values.password,
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("회원가입 실패");
+      }
+
+      const data = res.json();
+      console.log("회원가입 성공:", data);
+
+      router.push("/login");
+
+      return data;
+    } catch (error) {
+      console.error(err);
+      setError("회원가입에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+
     // TODO: 회원가입 처리
-    // 1. fetch 를 사용하여 회원가입 요청을 보냅니다.
-    // 2. 성공 시 응답 데이터를 확인합니다.
+    // 1. fetch 를 사용하여 회원가입 요청을 보냅니다. v
+    // 2. 성공 시 응답 데이터를 확인합니다. v
     // 3. 로딩 상태를 만들고 로딩중일 때는 회원가입 버튼을 비활성화 합니다.
-    // 4. 추가로 로딩중일 때는 회원가입 버튼텍스트를 "회원가입 중..."으로 변경합니다.
+    // 4. 추가로 로딩중일 때는 회원가입 버튼텍스트를 "회원가입 중..."으로 변경합니다. v
     // 5. 에러 상태를 만들고 회원가입 요청이 실패 시 에러 메시지를 회원가입버튼 바로 위에 표시합니다.
   }
 
@@ -98,7 +148,10 @@ function RegisterPage() {
           value={values.passwordRepeat}
           onChange={handleChange}
         />
-        <Button className={styles.Button}>회원가입</Button>
+        {error && <div className={styles.Error}>{error}</div>}
+        <Button className={styles.Button} type="submit" disabled={loading}>
+          {loading ? "회원가입 중…" : "회원가입"}
+        </Button>
         <div>
           이미 회원이신가요? <Link href="/login">로그인하기</Link>
         </div>
