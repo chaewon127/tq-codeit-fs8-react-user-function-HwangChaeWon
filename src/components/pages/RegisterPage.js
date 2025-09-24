@@ -8,7 +8,7 @@ import Button from "../Button";
 import Link from "next/link";
 import HorizontalRule from "../HorizontalRule";
 import styles from "./RegisterPage.module.css";
-import { authService } from "@/lib/authService";
+import { authService } from "@/lib/authServide";
 
 function RegisterPage() {
   const [values, setValues] = useState({
@@ -32,7 +32,14 @@ function RegisterPage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (values.password !== values.passwordRepeat) {
+    const { name, email, password, passwordRepeat } = values;
+
+    if (!name || !email || !password || !passwordRepeat) {
+      setError("모든 필드를 입력해주세요.");
+      return;
+    }
+
+    if (password !== passwordRepeat) {
       setError("비밀번호가 일치하지 않습니다.");
       return;
     }
@@ -41,34 +48,25 @@ function RegisterPage() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(
-        "https://learn.codeit.kr/api/link-service/users",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: values.name,
-            email: values.email,
-            password: values.password,
-          }),
-        },
-      );
+      const data = await authService.register(name, email, password);
+      console.log("회원가입 성공:", data);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "회원가입에 실패했습니다.");
-      }
-
-      // 회원가입 성공 후 처리
-      alert("회원가입에 성공했습니다.");
       router.push("/login");
+
+      return data;
     } catch (error) {
-      setError(error.message || "회원가입에 실패했습니다.");
+      console.error(error);
+      setError("회원가입에 실패했습니다.");
     } finally {
       setLoading(false);
     }
+
+    // TODO: 회원가입 처리
+    // 1. fetch 를 사용하여 회원가입 요청을 보냅니다. v
+    // 2. 성공 시 응답 데이터를 확인합니다. v
+    // 3. 로딩 상태를 만들고 로딩중일 때는 회원가입 버튼을 비활성화 합니다. v?
+    // 4. 추가로 로딩중일 때는 회원가입 버튼텍스트를 "회원가입 중..."으로 변경합니다. v
+    // 5. 에러 상태를 만들고 회원가입 요청이 실패 시 에러 메시지를 회원가입버튼 바로 위에 표시합니다. v
   }
 
   return (
@@ -135,8 +133,8 @@ function RegisterPage() {
           onChange={handleChange}
         />
         {error && <div className={styles.Error}>{error}</div>}
-        <Button className={styles.Button} disabled={loading}>
-          {loading ? "가입 중..." : "회원가입"}
+        <Button className={styles.Button} type="submit" disabled={loading}>
+          {loading ? "회원가입 중…" : "회원가입"}
         </Button>
         <div>
           이미 회원이신가요? <Link href="/login">로그인하기</Link>
