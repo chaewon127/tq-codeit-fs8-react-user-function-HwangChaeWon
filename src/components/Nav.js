@@ -30,14 +30,14 @@ function Nav() {
         </Link>
         <div className={styles.Menu}>
           {user ? (
-            <div>
+            <>
               {user.name}
               <Avatar src={user.avatar} size="small" alt={user.name} />
               <div className={styles.Divider} />
               <Button appearance="secondary" onClick={logout}>
                 로그아웃
               </Button>
-            </div>
+            </>
           ) : (
             <>
               <Button as={Link} appearance="secondary" href="/login">
