@@ -3,6 +3,7 @@
 import { authService } from "@/lib/authService";
 import { userService } from "@/lib/userService";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext({
   login: () => {},
@@ -22,6 +23,7 @@ export const useAuth = () => {
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   const getUser = async () => {
     try {
@@ -43,8 +45,17 @@ export default function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    /** @TODO 로그아웃 로직 구현 */
-    console.log("로그아웃");
+    try {
+      await authService.logout();
+      setUser(null);
+
+      console.log("로그아웃");
+
+      router.push("/");
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+    }
+    /** @TODO 로그아웃 로직 구현 v */
   };
 
   const updateUser = async (user) => {
